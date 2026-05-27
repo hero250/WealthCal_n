@@ -1,0 +1,13 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy:#060d1f; --navy2:#0c1830; --navy3:#112040;
+  --border:#1e3358; --green:#00e5a0; --green2:#00c285;
+  --green-dim:rgba(0,229,160,0.08); --green-glow:rgba(0,229,160,0.15);
+  --text:#f0f4ff; --text2:#a8b8d8; --text3:#6a7fa8;
+  --gold:#f5c842; --red:#ff5e5e; --blue:#4d9fff; --purple:#b57bff;
+  --radius:14px; --radius-sm:8px;
+}
+html { scroll-behavior: smooth; }
+body { font-family: 'Instrument Sans', sans-serif; background: var(--navy); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+a { color: inherit; text-decoration: none; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
