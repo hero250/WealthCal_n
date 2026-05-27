@@ -1,0 +1,496 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base
+  title="WealthCalc – Free Financial Calculators for Americans 2026"
+  description="Free US financial calculators: mortgage, paycheck, 401k, compound interest, auto loan, retirement, FIRE, and CD. Instant results, no sign-up required."
+>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"WealthCalc","description":"Free US financial calculators for mortgage, paycheck, 401k, retirement, FIRE and more.","applicationCategory":"FinanceApplication","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+
+<style>
+  *{box-sizing:border-box}
+  :root{--radius:14px;--radius-sm:8px}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+
+  /* HERO */
+  .hero{padding:5rem 2rem 3rem;text-align:center;position:relative;overflow:hidden;z-index:1}
+  .hero-line{position:absolute;top:0;left:50%;transform:translateX(-50%);width:1px;height:100px;background:linear-gradient(to bottom,var(--green),transparent);opacity:.4}
+  .hero-badge{display:inline-flex;align-items:center;gap:.5rem;font-size:.72rem;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--green);border:1px solid rgba(0,229,160,.25);padding:.35rem 1rem;border-radius:100px;margin-bottom:1.5rem;animation:fadeUp .6s ease both}
+  .badge-dot{width:5px;height:5px;background:var(--green);border-radius:50%;animation:pulse 1.5s infinite}
+  h1{font-family:'Syne',sans-serif;font-size:clamp(2.8rem,6vw,5rem);font-weight:800;line-height:1.0;letter-spacing:-3px;margin-bottom:1.25rem;animation:fadeUp .6s .1s ease both}
+  .accent{color:var(--green)}.dim{color:var(--text2)}
+  .hero-sub{font-size:1.05rem;color:var(--text2);max-width:520px;margin:0 auto 2.5rem;line-height:1.7;font-weight:300;animation:fadeUp .6s .2s ease both}
+  .stats-row{display:flex;justify-content:center;max-width:500px;margin:0 auto 3rem;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;animation:fadeUp .6s .3s ease both}
+  .stat{flex:1;padding:1rem;text-align:center;border-right:1px solid var(--border)}
+  .stat:last-child{border-right:none}
+  .stat-num{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--green)}
+  .stat-label{font-size:.7rem;color:var(--text3);margin-top:2px;letter-spacing:.5px;text-transform:uppercase}
+
+  /* CALC PILLS */
+  .calc-nav{max-width:980px;margin:0 auto;padding:0 1.5rem 1.5rem;display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;animation:fadeUp .6s .4s ease both;position:relative;z-index:1}
+  .calc-pill{background:var(--navy2);border:1px solid var(--border);color:var(--text3);padding:.5rem 1.1rem;border-radius:100px;font-size:.8rem;font-weight:500;font-family:'Instrument Sans',sans-serif;cursor:pointer;transition:all .2s;white-space:nowrap}
+  .calc-pill:hover{border-color:var(--green);color:var(--text)}
+  .calc-pill.active{background:var(--green-dim);border-color:var(--green);color:var(--green)}
+
+  /* CALC CARDS */
+  .calc-area{max-width:980px;margin:0 auto;padding:0 1.5rem 5rem;position:relative;z-index:1}
+  .calc-card{background:var(--navy2);border:1px solid var(--border);border-radius:var(--radius);padding:2.5rem;display:none;animation:fadeUp .3s ease both;position:relative;overflow:hidden}
+  .calc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--green),transparent)}
+  .calc-card.active{display:block}
+  .calc-icon{font-size:1.8rem;margin-bottom:.75rem}
+  .calc-title{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:700;letter-spacing:-.5px;margin-bottom:.3rem}
+  .calc-desc{color:var(--text3);font-size:.88rem;line-height:1.6;margin-bottom:2rem}
+  .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem}
+  .field{display:flex;flex-direction:column;gap:.45rem}
+  .field label{font-size:.72rem;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.8px}
+  .field input,.field select{background:var(--navy3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.75rem 1rem;color:var(--text);font-family:'Instrument Sans',sans-serif;font-size:.95rem;outline:none;transition:border-color .2s;width:100%}
+  .field input:focus,.field select:focus{border-color:var(--green)}
+  .field input::placeholder{color:var(--text3)}
+  .field select option{background:var(--navy3)}
+  .pfx{position:relative}
+  .pfx .px{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);color:var(--text3);font-size:.95rem;pointer-events:none}
+  .pfx input{padding-left:1.75rem}
+  .full{grid-column:span 2}
+  .slider-wrap{display:flex;flex-direction:column;gap:.45rem}
+  .slider-top{display:flex;justify-content:space-between;align-items:center}
+  .slider-top label{font-size:.72rem;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.8px}
+  .sv{font-size:.88rem;font-weight:600;color:var(--green);font-family:'Syne',sans-serif}
+  input[type=range]{-webkit-appearance:none;width:100%;height:3px;background:var(--border);border-radius:2px;outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--green);cursor:pointer;border:2px solid var(--navy);box-shadow:0 0 0 3px var(--green-glow)}
+  .calc-btn{width:100%;padding:.9rem;background:var(--green);color:var(--navy);border:none;border-radius:var(--radius-sm);font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.3px}
+  .calc-btn:hover{background:var(--green2);transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,229,160,.2)}
+  .result-box{margin-top:1.5rem;background:var(--green-dim);border:1px solid rgba(0,229,160,.18);border-radius:var(--radius);padding:1.5rem 2rem;display:none;animation:fadeUp .3s ease both}
+  .result-box.show{display:block}
+  .rl{font-size:.65rem;text-transform:uppercase;letter-spacing:2px;color:var(--green);margin-bottom:1.25rem;font-weight:600}
+  .rg{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1rem}
+  .ri{text-align:center}
+  .rn{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--green)}
+  .rs{font-size:.7rem;color:var(--text3);margin-top:3px}
+  .rnote{margin-top:1rem;font-size:.78rem;color:var(--text3);padding-top:1rem;border-top:1px solid rgba(0,229,160,.12);line-height:1.6}
+
+  /* FEATURES */
+  .features{background:var(--navy2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:5rem 2rem;text-align:center;position:relative;z-index:1}
+  .eyebrow{font-size:.7rem;text-transform:uppercase;letter-spacing:3px;color:var(--green);margin-bottom:.75rem;font-weight:600}
+  .sec-title{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;margin-bottom:3rem;letter-spacing:-1.5px}
+  .feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem;max-width:960px;margin:0 auto}
+  .feat{background:var(--navy);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;text-align:left;transition:all .25s}
+  .feat:hover{border-color:rgba(0,229,160,.3);transform:translateY(-3px)}
+  .fi{font-size:1.5rem;margin-bottom:.75rem}
+  .fn{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;margin-bottom:.35rem}
+  .ft{font-size:.8rem;color:var(--text3);line-height:1.6}
+
+  /* FAQ */
+  .faq-wrap{max-width:700px;margin:0 auto;padding:5rem 2rem;position:relative;z-index:1}
+  .faq-item{border-bottom:1px solid var(--border);padding:1.1rem 0}
+  .faq-q{width:100%;background:none;border:none;color:var(--text);font-family:'Instrument Sans',sans-serif;font-size:.92rem;font-weight:500;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  .faq-icon{width:22px;height:22px;border:1px solid var(--border2);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--green);font-size:.9rem;transition:all .2s}
+  .faq-item.open .faq-icon{background:var(--green-dim);border-color:var(--green);transform:rotate(45deg)}
+  .faq-a{font-size:.85rem;color:var(--text2);line-height:1.75;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s}
+  .faq-item.open .faq-a{max-height:300px;padding-top:.75rem}
+
+  /* BLOG PREVIEW */
+  .blog-preview{max-width:980px;margin:0 auto;padding:0 1.5rem 5rem;position:relative;z-index:1}
+  .bp-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1.5rem}
+  .bp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.1rem}
+  .bp-card{background:var(--navy2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:all .25s;display:block}
+  .bp-card:hover{border-color:rgba(0,229,160,.3);transform:translateY(-3px)}
+  .bp-vis{height:90px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:linear-gradient(135deg,var(--navy3),var(--navy2))}
+  .bp-body{padding:1rem}
+  .bp-cat{font-size:.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:.4rem}
+  .bp-title{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:var(--text);line-height:1.3}
+  .view-all{color:var(--green);font-size:.82rem;font-weight:600}
+
+  @media(max-width:640px){.calc-grid{grid-template-columns:1fr}.full{grid-column:span 1}.stats-row{gap:0}}
+</style>
+
+<section class="hero">
+  <div class="hero-line"></div>
+  <div class="hero-badge"><span class="badge-dot"></span>Free · No Sign-Up · Runs in Your Browser</div>
+  <h1>The <span class="accent">Smarter</span> Way<br/>to <span class="dim">Do the Math</span></h1>
+  <p class="hero-sub">Instant, accurate financial calculators for mortgages, paychecks, 401k, retirement, and more. Built for Americans.</p>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-num">8</div><div class="stat-label">Calculators</div></div>
+    <div class="stat"><div class="stat-num">$0</div><div class="stat-label">Cost</div></div>
+    <div class="stat"><div class="stat-num">0s</div><div class="stat-label">Results</div></div>
+    <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Private</div></div>
+  </div>
+</section>
+
+<div class="calc-nav" id="calculators">
+  <button class="calc-pill active" onclick="sw('mortgage',this)">🏠 Mortgage</button>
+  <button class="calc-pill" onclick="sw('paycheck',this)">💵 Paycheck</button>
+  <button class="calc-pill" onclick="sw('k401',this)">📈 401(k)</button>
+  <button class="calc-pill" onclick="sw('compound',this)">🔢 Compound Interest</button>
+  <button class="calc-pill" onclick="sw('auto',this)">🚗 Auto Loan</button>
+  <button class="calc-pill" onclick="sw('retirement',this)">🎯 Retirement</button>
+  <button class="calc-pill" onclick="sw('fire',this)">🔥 FIRE</button>
+  <button class="calc-pill" onclick="sw('cd',this)">🏦 CD</button>
+</div>
+
+<div class="calc-area">
+
+  <div class="calc-card active" id="c-mortgage">
+    <div class="calc-icon">🏠</div>
+    <div class="calc-title">Mortgage Calculator</div>
+    <p class="calc-desc">Calculate your monthly mortgage payment including principal, interest, taxes, and insurance (PITI).</p>
+    <div class="calc-grid">
+      <div class="field"><label>Home Price</label><div class="pfx"><span class="px">$</span><input type="number" id="m-price" value="400000"/></div></div>
+      <div class="field"><label>Down Payment</label><div class="pfx"><span class="px">$</span><input type="number" id="m-down" value="80000"/></div></div>
+      <div class="field"><label>Annual Interest Rate (%)</label><input type="number" id="m-rate" value="6.8" step="0.1"/></div>
+      <div class="field"><label>Loan Term</label><select id="m-term"><option value="30">30 Years</option><option value="20">20 Years</option><option value="15">15 Years</option><option value="10">10 Years</option></select></div>
+      <div class="field"><label>Annual Property Tax ($)</label><input type="number" id="m-tax" value="4800"/></div>
+      <div class="field"><label>Annual Home Insurance ($)</label><input type="number" id="m-ins" value="1200"/></div>
+    </div>
+    <button class="calc-btn" onclick="calcMortgage()">Calculate Monthly Payment →</button>
+    <div class="result-box" id="r-m">
+      <div class="rl">📊 Mortgage Breakdown</div>
+      <div class="rg">
+        <div class="ri"><div class="rn" id="m-monthly">—</div><div class="rs">Monthly Payment (PITI)</div></div>
+        <div class="ri"><div class="rn" id="m-pi">—</div><div class="rs">Principal & Interest</div></div>
+        <div class="ri"><div class="rn" id="m-ti">—</div><div class="rs">Total Interest Paid</div></div>
+        <div class="ri"><div class="rn" id="m-tc">—</div><div class="rs">Total Cost of Home</div></div>
+      </div>
+      <div class="rnote" id="m-note"></div>
+    </div>
+  </div>
+
+  <div class="calc-card" id="c-paycheck">
+    <div class="calc-icon">💵</div>
+    <div class="calc-title">Paycheck Calculator</div>
+    <p class="calc-desc">Estimate your take-home pay after federal taxes, Social Security, Medicare, and state income tax.</p>
+    <div class="calc-grid">
+      <div class="field"><label>Annual Gross Salary</label><div class="pfx"><span class="px">$</span><input type="number" id="p-salary" value="75000"/></div></div>
+      <div class="field"><label>Pay Frequency</label><select id="p-freq"><option value="26">Bi-Weekly (26/yr)</option><option value="24">Semi-Monthly (24/yr)</option><option value="12">Monthly (12/yr)</option><option value="52">Weekly (52/yr)</option></select></div>
+      <div class="field"><label>Filing Status</label><select id="p-status"><option value="single">Single</option><option value="married">Married Filing Jointly</option></select></div>
+      <div class="field"><label>State Tax Rate (%)</label><input type="number" id="p-state" value="5" step="0.1"/></div>
+      <div class="field"><label>401(k) Contribution (%)</label><input type="number" id="p-401k" value="6" step="0.5"/></div>
+      <div class="field"><label>Health Insurance (per paycheck)</label><div class="pfx"><span class="px">$</span><input type="number" id="p-health" value="150"/></div></div>
+    </div>
+    <button class="calc-btn" onclick="calcPaycheck()">Calculate Take-Home Pay →</button>
+    <div class="result-box" id="r-p">
+      <div class="rl">💵 Paycheck Breakdown</div>
+      <div class="rg">
+        <div class="ri"><div class="rn" id="p-takehome">—</div><div class="rs">Take-Home Pay</div></div>
+        <div class="ri"><div class="rn" id="p-federal">—</div><div class="rs">Federal Tax</div></div>
+        <div class="ri"><div class="rn" id="p-fica">—</div><div class="rs">FICA (SS + Medicare)</div></div>
+        <div class="ri"><div class="rn" id="p-annual">—</div><div class="rs">Annual Take-Home</div></div>
+      </div>
+      <div class="rnote" id="p-note"></div>
+    </div>
+  </div>
+
+  <div class="calc-card" id="c-k401">
+    <div class="calc-icon">📈</div>
+    <div class="calc-title">401(k) Growth Calculator</div>
+    <p class="calc-desc">See how your 401(k) grows over time with employer match and compound returns.</p>
+    <div class="calc-grid">
+      <div class="field"><label>Current Balance</label><div class="pfx"><span class="px">$</span><input type="number" id="k-bal" value="25000"/></div></div>
+      <div class="field"><label>Annual Salary</label><div class="pfx"><span class="px">$</span><input type="number" id="k-sal" value="80000"/></div></div>
+      <div class="field"><label>Your Contribution (%)</label><input type="number" id="k-con" value="10" step="0.5"/></div>
+      <div class="field"><label>Employer Match (%)</label><input type="number" id="k-mat" value="4" step="0.5"/></div>
+      <div class="field"><label>Expected Annual Return (%)</label><input type="number" id="k-ret" value="7" step="0.5"/></div>
+      <div class="field"><label>Years Until Retirement</label><input type="number" id="k-yrs" value="30"/></div>
+    </div>
+    <button class="calc-btn" onclick="calc401k()">Project My 401(k) →</button>
+    <div class="result-box" id="r-k">
+      <div class="rl">📈 401(k) Projection</div>
+      <div class="rg">
+        <div class="ri"><div class="rn" id="k-final">—</div><div class="rs">Projected Balance</div></div>
+        <div class="ri"><div class="rn" id="k-yours">—</div><div class="rs">Your Contributions</div></div>
+        <div class="ri"><div class="rn" id="k-emp">—</div><div class="rs">Employer Match</div></div>
+        <div class="ri"><div class="rn" id="k-grow">—</div><div class="rs">Investment Growth</div></div>
+      </div>
+      <div class="rnote" id="k-note"></div>
+    </div>
+  </div>
+
+  <div class="calc-card" id="c-compound">
+    <div class="calc-icon">🔢</div>
+    <div class="calc-title">Compound Interest Calculator</div>
+    <p class="calc-desc">See how your money grows with the power of compounding over time.</p>
+    <div class="calc-grid">
+      <div class="field"><label>Initial Investment</label><div class="pfx"><span class="px">$</span><input type="number" id="ci-p" value="10000"/></div></div>
+      <div class="field"><label>Annual Interest Rate (%)</label><input type="number" id="ci-r" value="7" step="0.1"/></div>
+      <div class="field"><label>Compound Frequency</label><select id="ci-n"><option value="1">Annually</option><option value="4">Quarterly</option><option value="12" selected>Monthly</option><option value="365">Daily</option></select></div>
+      <div class="field"><label>Monthly Additions</label><div class="pfx"><span class="px">$</span><input type="number" id="ci-add" value="200"/></div></div>
+      <div class="slider-wrap full">
+        <div class="slider-top"><label>Time Period</label><span class="sv" id="ci-yv">20 Years</span></div>
+        <input type="range" id="ci-yrs" min="1" max="50" value="20" oninput="document.getElementById('ci-yv').textContent=this.value+' Years'"/>
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcCompound()">Calculate Growth →</button>
+    <div class="result-box" id="r-ci">
+      <div class="rl">💰 Compound Growth</div>
+      <div class="rg">
+        <div class="ri"><div class="rn" id="ci-final">—</div><div class="rs">Final Balance</div></div>
+        <div class="ri"><div class="rn" id="ci-dep">—</div><div class="rs">Total Deposited</div></div>
+        <div class="ri"><div class="rn" id="ci-earn">—</div><div class="rs">Interest Earned</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="calc-card" id="c-auto">
+    <div class="calc-icon">🚗</div>
+    <div class="calc-title">Auto Loan Calculator</div>
+    <p class="calc-desc">Calculate your monthly car payment and total cost of vehicle ownership.</p>
+    <div class="calc-grid">
+      <div class="field"><label>Vehicle Price</label><div class="pfx"><span class="px">$</span><input type="number" id="a-price" value="35000"/></div></div>
+      <div class="field"><label>Down Payment</label><div class="pfx"><span class="px">$</span><input type="number" id="a-down" value="5000"/></div></div>
+      <div class="field"><label>Trade-In Value</label><div class="pfx"><span class="px">$</span><input type="number" id="a-trade" value="0"/></div></div>
+      <div class="field"><label>Annual Interest Rate (%)</label><input type="number" id="a-rate" value="6.5" step="0.1"/></div>
+      <div class="slider-wrap full">
+        <div class="slider-top"><label>Loan Term</label><span class="sv" id="a-tv">60 Months</span></div>
+        <input type="range" id="a-term" min="12" max="84" step="12" value="60" oninput="document.getElementById('a-tv').textContent=this.value+' Months'"/>
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcAuto()">Calculate Car Payment →</button>
+    <div class="result-box" id="r-a">
+      <div class="rl">🚗 Auto Loan Breakdown</div>
+      <div class="rg">
+        <div class="ri"><div class="rn" id="a-mo">—</div><div class="rs">Monthly Payment</div></div>
+        <div class="ri"><div class="rn" id="a-int">—</div><div class="rs">Total Interest</div></div>
+        <div class="ri"><div class="rn" id="a-tot">—</div><div class="rs">Total Cost</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="calc-card" id="c-retirement">
+    <div class="calc-icon">🎯</div>
+    <div class="calc-title">Retirement Savings Calculator</div>
+    <p class="calc-desc">Find out how much you need to save monthly to hit your retirement goal.</p>
+    <div class="calc-grid">
+      <div class="field"><label>Current Age</label><input type="number" id="rt-age" value="35"/></div>
+      <div class="field"><label>Retirement Age</label><input type="number" id="rt-ret" value="65"/></div>
+      <div class="field"><label>Current Savings</label><div class="pfx"><span class="px">$</span><input type="number" id="rt-sav" value="50000"/></div></div>
+      <div class="field"><label>Target Nest Egg</label><div class="pfx"><span class="px">$</span><input type="number" id="rt-goal" value="2000000"/></div></div>
+      <div class="field"><label>Expected Annual Return (%)</label><input type="number" id="rt-rtn" value="7" step="0.5"/></div>
+      <div class="field"><label>Social Security (monthly)</label><div class="pfx"><span class="px">$</span><input type="number" id="rt-ss" value="1800"/></div></div>
+    </div>
+    <button class="calc-btn" onclick="calcRetirement()">Plan My Retirement →</button>
+    <div class="result-box" id="r-rt">
+      <div class="rl">🎯 Retirement Projection</div>
+      <div class="rg">
+        <div class="ri"><div class="rn" id="rt-mo">—</div><div class="rs">Monthly Savings Needed</div></div>
+        <div class="ri"><div class="rn" id="rt-yrs">—</div><div class="rs">Years to Retirement</div></div>
+        <div class="ri"><div class="rn" id="rt-proj">—</div><div class="rs">Projected at Retirement</div></div>
+        <div class="ri"><div class="rn" id="rt-inc">—</div><div class="rs">Est. Monthly Income</div></div>
+      </div>
+      <div class="rnote" id="rt-note"></div>
+    </div>
+  </div>
+
+  <div class="calc-card" id="c-fire">
+    <div class="calc-icon">🔥</div>
+    <div class="calc-title">FIRE Calculator</div>
+    <p class="calc-desc">Calculate your Financial Independence number and years until you can retire early.</p>
+    <div class="calc-grid">
+      <div class="field"><label>Annual Spending</label><div class="pfx"><span class="px">$</span><input type="number" id="f-sp" value="60000"/></div></div>
+      <div class="field"><label>Current Net Worth</label><div class="pfx"><span class="px">$</span><input type="number" id="f-nw" value="150000"/></div></div>
+      <div class="field"><label>Annual Savings</label><div class="pfx"><span class="px">$</span><input type="number" id="f-as" value="40000"/></div></div>
+      <div class="field"><label>Expected Annual Return (%)</label><input type="number" id="f-ret" value="7" step="0.5"/></div>
+      <div class="field"><label>Safe Withdrawal Rate (%)</label><input type="number" id="f-swr" value="4" step="0.1"/></div>
+      <div class="field"><label>Your Current Age</label><input type="number" id="f-age" value="32"/></div>
+    </div>
+    <button class="calc-btn" onclick="calcFIRE()">Find My FIRE Number →</button>
+    <div class="result-box" id="r-f">
+      <div class="rl">🔥 FIRE Projection</div>
+      <div class="rg">
+        <div class="ri"><div class="rn" id="f-num">—</div><div class="rs">FIRE Number</div></div>
+        <div class="ri"><div class="rn" id="f-yrs">—</div><div class="rs">Years to FIRE</div></div>
+        <div class="ri"><div class="rn" id="f-fage">—</div><div class="rs">FIRE Age</div></div>
+        <div class="ri"><div class="rn" id="f-rate">—</div><div class="rs">Savings Rate</div></div>
+      </div>
+      <div class="rnote" id="f-note"></div>
+    </div>
+  </div>
+
+  <div class="calc-card" id="c-cd">
+    <div class="calc-icon">🏦</div>
+    <div class="calc-title">CD Calculator</div>
+    <p class="calc-desc">Calculate your Certificate of Deposit maturity value and effective APY.</p>
+    <div class="calc-grid">
+      <div class="field"><label>Initial Deposit</label><div class="pfx"><span class="px">$</span><input type="number" id="cd-p" value="10000"/></div></div>
+      <div class="field"><label>APY (%)</label><input type="number" id="cd-apy" value="5.1" step="0.05"/></div>
+      <div class="field"><label>CD Term</label><select id="cd-term"><option value="0.25">3 Months</option><option value="0.5">6 Months</option><option value="1" selected>1 Year</option><option value="2">2 Years</option><option value="3">3 Years</option><option value="5">5 Years</option></select></div>
+      <div class="field"><label>Compound Frequency</label><select id="cd-freq"><option value="365" selected>Daily</option><option value="12">Monthly</option><option value="4">Quarterly</option><option value="1">Annually</option></select></div>
+    </div>
+    <button class="calc-btn" onclick="calcCD()">Calculate CD Returns →</button>
+    <div class="result-box" id="r-cd">
+      <div class="rl">🏦 CD Maturity</div>
+      <div class="rg">
+        <div class="ri"><div class="rn" id="cd-mat">—</div><div class="rs">Maturity Value</div></div>
+        <div class="ri"><div class="rn" id="cd-int">—</div><div class="rs">Interest Earned</div></div>
+        <div class="ri"><div class="rn" id="cd-eff">—</div><div class="rs">Effective APY</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<section class="features">
+  <p class="eyebrow">Why WealthCalc</p>
+  <div class="sec-title">Built Different.<br/>Works Better.</div>
+  <div class="feat-grid">
+    <div class="feat"><div class="fi">⚡</div><div class="fn">Instant Results</div><p class="ft">No loading spinners. Results appear the moment you hit calculate.</p></div>
+    <div class="feat"><div class="fi">🔒</div><div class="fn">100% Private</div><p class="ft">All math happens in your browser. Your numbers never touch our servers.</p></div>
+    <div class="feat"><div class="fi">🇺🇸</div><div class="fn">US-Specific</div><p class="ft">Built with 2026 IRS brackets, FICA rates, and US financial realities.</p></div>
+    <div class="feat"><div class="fi">📱</div><div class="fn">Works Everywhere</div><p class="ft">Optimized for mobile, tablet, and desktop. Use it anywhere.</p></div>
+    <div class="feat"><div class="fi">🆓</div><div class="fn">Always Free</div><p class="ft">No subscriptions, no paywalls, no sign-up. All 8 tools, always free.</p></div>
+    <div class="feat"><div class="fi">📐</div><div class="fn">Accurate Formulas</div><p class="ft">Standard financial formulas. The same math your bank uses.</p></div>
+  </div>
+</section>
+
+<div class="blog-preview">
+  <div class="bp-header">
+    <div class="sec-title" style="margin-bottom:0;font-size:1.6rem">From the Blog</div>
+    <a href="/blog" class="view-all">View all articles →</a>
+  </div>
+  <div class="bp-grid">
+    <a href="/blog/fire-calculator-guide" class="bp-card"><div class="bp-vis">🔥</div><div class="bp-body"><div class="bp-cat">Money Basics</div><div class="bp-title">The Complete American Guide to FIRE</div></div></a>
+    <a href="/blog/how-much-house-can-i-afford" class="bp-card"><div class="bp-vis">🏠</div><div class="bp-body"><div class="bp-cat">Mortgage</div><div class="bp-title">How Much House Can You Actually Afford?</div></div></a>
+    <a href="/blog/401k-mistakes" class="bp-card"><div class="bp-vis">📈</div><div class="bp-body"><div class="bp-cat">Retirement</div><div class="bp-title">7 401(k) Mistakes Costing You Thousands</div></div></a>
+    <a href="/blog/pay-off-mortgage-vs-invest" class="bp-card"><div class="bp-vis">💳</div><div class="bp-body"><div class="bp-cat">Debt</div><div class="bp-title">Pay Off Mortgage Early vs Invest</div></div></a>
+  </div>
+</div>
+
+<div class="faq-wrap" id="faq">
+  <p class="eyebrow" style="text-align:center">FAQ</p>
+  <div class="sec-title" style="text-align:center;margin-bottom:2rem">Common Questions</div>
+  <div class="faq-item"><button class="faq-q" onclick="tFAQ(this)">How accurate is the mortgage calculator?<div class="faq-icon">+</div></button><div class="faq-a">Our mortgage calculator uses the standard amortization formula used by all US lenders. Principal and interest will be exact. Taxes and insurance are estimates based on your inputs.</div></div>
+  <div class="faq-item"><button class="faq-q" onclick="tFAQ(this)">Does the paycheck calculator include state taxes?<div class="faq-icon">+</div></button><div class="faq-a">Yes — you enter your state's income tax rate manually, which makes it work for all 50 states. Federal taxes use 2026 IRS brackets. FICA (6.2% SS + 1.45% Medicare) is calculated automatically.</div></div>
+  <div class="faq-item"><button class="faq-q" onclick="tFAQ(this)">What is a FIRE number?<div class="faq-icon">+</div></button><div class="faq-a">Your FIRE number is the portfolio size needed to retire and never run out of money. Calculated as Annual Spending ÷ Safe Withdrawal Rate. At the classic 4% SWR, you need 25× your annual spending.</div></div>
+  <div class="faq-item"><button class="faq-q" onclick="tFAQ(this)">Is my financial data stored anywhere?<div class="faq-icon">+</div></button><div class="faq-a">No. Every calculation runs entirely in your browser with JavaScript. Nothing is sent to any server. Your financial data is completely private.</div></div>
+  <div class="faq-item"><button class="faq-q" onclick="tFAQ(this)">How much should I contribute to my 401(k)?<div class="faq-icon">+</div></button><div class="faq-a">At minimum, contribute enough to get your full employer match. Beyond that, aim for 15% of gross income total. The 2026 IRS 401(k) limit is $23,500 ($31,000 if age 50+).</div></div>
+</div>
+
+<script>
+var fmtU=n=>'$'+Math.round(n).toLocaleString('en-US');
+var fmtK=n=>n>=1000000?'$'+(n/1000000).toFixed(2)+'M':n>=1000?'$'+(n/1000).toFixed(1)+'K':fmtU(n);
+
+function sw(n,btn){
+  document.querySelectorAll('.calc-card').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('.calc-pill').forEach(b=>b.classList.remove('active'));
+  document.getElementById('c-'+n).classList.add('active');
+  btn.classList.add('active');
+}
+function tFAQ(btn){btn.closest('.faq-item').classList.toggle('open');}
+
+function calcMortgage(){
+  var price=+document.getElementById('m-price').value,down=+document.getElementById('m-down').value;
+  var rate=+document.getElementById('m-rate').value/100/12,term=+document.getElementById('m-term').value*12;
+  var tax=+document.getElementById('m-tax').value/12,ins=+document.getElementById('m-ins').value/12;
+  var loan=price-down; if(!loan||!rate)return;
+  var pi=loan*rate*Math.pow(1+rate,term)/(Math.pow(1+rate,term)-1);
+  document.getElementById('m-monthly').textContent=fmtU(pi+tax+ins);
+  document.getElementById('m-pi').textContent=fmtU(pi);
+  document.getElementById('m-ti').textContent=fmtU(pi*term-loan);
+  document.getElementById('m-tc').textContent=fmtU(pi*term+down+tax*term+ins*term);
+  document.getElementById('m-note').textContent='Loan: '+fmtU(loan)+' | Down: '+(down/price*100).toFixed(1)+'% | P&I: '+fmtU(pi)+'/mo';
+  document.getElementById('r-m').classList.add('show');
+}
+function calcPaycheck(){
+  var sal=+document.getElementById('p-salary').value,freq=+document.getElementById('p-freq').value;
+  var status=document.getElementById('p-status').value,stRate=+document.getElementById('p-state').value/100;
+  var k=+document.getElementById('p-401k').value/100,health=+document.getElementById('p-health').value;
+  var k401=sal*k,taxable=sal-k401,fed=0;
+  if(status==='single'){
+    if(taxable>609350)fed=174238+(taxable-609350)*.37;
+    else if(taxable>243725)fed=55374+(taxable-243725)*.35;
+    else if(taxable>191950)fed=37104+(taxable-191950)*.32;
+    else if(taxable>100525)fed=16290+(taxable-100525)*.24;
+    else if(taxable>47150)fed=5426+(taxable-47150)*.22;
+    else if(taxable>11600)fed=1160+(taxable-11600)*.12;
+    else fed=taxable*.10;
+  } else {
+    if(taxable>731200)fed=207345+(taxable-731200)*.37;
+    else if(taxable>487450)fed=111357+(taxable-487450)*.35;
+    else if(taxable>383900)fed=80037+(taxable-383900)*.32;
+    else if(taxable>201050)fed=34647+(taxable-201050)*.24;
+    else if(taxable>94300)fed=10852+(taxable-94300)*.22;
+    else if(taxable>23200)fed=2320+(taxable-23200)*.12;
+    else fed=taxable*.10;
+  }
+  var ss=Math.min(sal,176100)*.062,med=sal*.0145,fica=ss+med;
+  var annual=sal-fed-fica-(taxable*stRate)-k401;
+  var pp=annual/freq-health;
+  document.getElementById('p-takehome').textContent=fmtU(pp);
+  document.getElementById('p-federal').textContent=fmtU(fed/freq);
+  document.getElementById('p-fica').textContent=fmtU(fica/freq);
+  document.getElementById('p-annual').textContent=fmtU(annual-(health*freq));
+  document.getElementById('p-note').textContent='Effective federal rate: '+(fed/sal*100).toFixed(1)+'% | 401(k): '+fmtU(k401)+'/yr | State tax: '+fmtU(taxable*stRate/freq)+'/paycheck';
+  document.getElementById('r-p').classList.add('show');
+}
+function calc401k(){
+  var bal=+document.getElementById('k-bal').value,sal=+document.getElementById('k-sal').value;
+  var con=+document.getElementById('k-con').value/100,mat=+document.getElementById('k-mat').value/100;
+  var ret=+document.getElementById('k-ret').value/100,yrs=+document.getElementById('k-yrs').value;
+  var ya=Math.min(sal*con,23500),ma=sal*Math.min(mat,con),t=bal,yt=0,mt=0;
+  for(var i=0;i<yrs;i++){t=(t+ya+ma)*(1+ret);yt+=ya;mt+=ma;}
+  document.getElementById('k-final').textContent=fmtK(t);
+  document.getElementById('k-yours').textContent=fmtK(yt);
+  document.getElementById('k-emp').textContent=fmtK(mt);
+  document.getElementById('k-grow').textContent=fmtK(t-yt-mt-bal);
+  document.getElementById('k-note').textContent='Your annual contribution: '+fmtU(ya)+' | Employer match: '+fmtU(ma)+'/yr | 2026 limit: $23,500';
+  document.getElementById('r-k').classList.add('show');
+}
+function calcCompound(){
+  var P=+document.getElementById('ci-p').value,r=+document.getElementById('ci-r').value/100;
+  var add=+document.getElementById('ci-add').value,t=+document.getElementById('ci-yrs').value;
+  var total=P,dep=P;
+  for(var i=0;i<t*12;i++){total=total*(1+r/12)+add;dep+=add;}
+  document.getElementById('ci-final').textContent=fmtK(total);
+  document.getElementById('ci-dep').textContent=fmtK(dep);
+  document.getElementById('ci-earn').textContent=fmtK(total-dep);
+  document.getElementById('r-ci').classList.add('show');
+}
+function calcAuto(){
+  var price=+document.getElementById('a-price').value,down=+document.getElementById('a-down').value;
+  var trade=+document.getElementById('a-trade').value,rate=+document.getElementById('a-rate').value/100/12;
+  var term=+document.getElementById('a-term').value,loan=price-down-trade;
+  if(!loan||!rate)return;
+  var mo=loan*rate*Math.pow(1+rate,term)/(Math.pow(1+rate,term)-1);
+  document.getElementById('a-mo').textContent=fmtU(mo);
+  document.getElementById('a-int').textContent=fmtU(mo*term-loan);
+  document.getElementById('a-tot').textContent=fmtU(mo*term+down+trade);
+  document.getElementById('r-a').classList.add('show');
+}
+function calcRetirement(){
+  var age=+document.getElementById('rt-age').value,ret=+document.getElementById('rt-ret').value;
+  var sav=+document.getElementById('rt-sav').value,goal=+document.getElementById('rt-goal').value;
+  var rtn=+document.getElementById('rt-rtn').value/100,ss=+document.getElementById('rt-ss').value;
+  var yrs=ret-age; if(yrs<=0)return;
+  var r=rtn/12,n=yrs*12,proj=sav*Math.pow(1+r,n),gap=goal-proj;
+  var mo=gap>0?gap*r/(Math.pow(1+r,n)-1):0;
+  document.getElementById('rt-mo').textContent=mo>0?fmtU(mo):'On Track!';
+  document.getElementById('rt-yrs').textContent=yrs+' yrs';
+  document.getElementById('rt-proj').textContent=fmtK(proj);
+  document.getElementById('rt-inc').textContent=fmtU(goal*.04/12+ss);
+  document.getElementById('rt-note').textContent='Current savings of '+fmtU(sav)+' grows to '+fmtK(proj)+' in '+yrs+' years. Monthly income = 4% rule + $'+ss+'/mo SS.';
+  document.getElementById('r-rt').classList.add('show');
+}
+function calcFIRE(){
+  var sp=+document.getElementById('f-sp').value,nw=+document.getElementById('f-nw').value;
+  var as=+document.getElementById('f-as').value,ret=+document.getElementById('f-ret').value/100;
+  var swr=+document.getElementById('f-swr').value/100,curAge=+document.getElementById('f-age').value;
+  var fireNum=sp/swr,port=nw,yrs=0;
+  while(port<fireNum&&yrs<60){port=port*(1+ret)+as;yrs++;}
+  var sr=(as/(sp+as)*100).toFixed(0);
+  document.getElementById('f-num').textContent=fmtK(fireNum);
+  document.getElementById('f-yrs').textContent=yrs<60?yrs+' yrs':'60+ yrs';
+  document.getElementById('f-fage').textContent=yrs<60?curAge+yrs:'N/A';
+  document.getElementById('f-rate').textContent=sr+'%';
+  document.getElementById('f-note').textContent='FIRE = Annual spending ÷ '+((swr*100).toFixed(1))+'% SWR = '+fmtK(fireNum)+'. Assumes '+fmtU(as)+'/yr savings at '+((ret*100).toFixed(1))+'% return.';
+  document.getElementById('r-f').classList.add('show');
+}
+function calcCD(){
+  var P=+document.getElementById('cd-p').value,apy=+document.getElementById('cd-apy').value/100;
+  var t=+document.getElementById('cd-term').value,n=+document.getElementById('cd-freq').value;
+  var mat=P*Math.pow(1+apy/n,n*t);
+  document.getElementById('cd-mat').textContent=fmtU(mat);
+  document.getElementById('cd-int').textContent=fmtU(mat-P);
+  document.getElementById('cd-eff').textContent=((Math.pow(1+apy/n,n)-1)*100).toFixed(3)+'%';
+  document.getElementById('r-cd').classList.add('show');
+}
+</script>
+</Base>
