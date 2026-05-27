@@ -1,0 +1,22 @@
+[[redirects]]
+  from = "http://wealthcal.org/*"
+  to = "https://www.wealthcal.org/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://www.wealthcal.org/*"
+  to = "https://www.wealthcal.org/:splat"
+  status = 301
+  force = true
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[build]
+  command = "npm run build"
+  publish = "dist"
